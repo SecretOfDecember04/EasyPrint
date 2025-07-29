@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyPrint - Instant Order Printing for TikTok & Etsy Sellers</title>
+    <meta name="description" content="Automatically print shipping labels for TikTok Shop and Etsy orders. Perfect for live stream sellers and e-commerce businesses.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🖨️</text></svg>">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --secondary: #10B981;
+            --tiktok: #FF0050;
+            --etsy: #F1641E;
+            --dark: #1F2937;
+            --light: #F9FAFB;
+            --text: #374151;
+            --border: #E5E7EB;
+            --gradient: linear-gradient(135deg, #4F46E5 0%, #10B981 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: bold;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: '🖨️';
+            font-size: 1.5rem;
+            -webkit-text-fill-color: initial;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .cta-button {
+            background: var(--gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(to bottom, var(--light) 0%, white 100%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text);
+            margin-bottom: 2rem;
+        }
+
+        .platform-badges {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .platform-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 2rem;
+            font-weight: 600;
+        }
+
+        .tiktok-badge {
+            border-color: var(--tiktok);
+            color: var(--tiktok);
+        }
+
+        .etsy-badge {
+            border-color: var(--etsy);
+            color: var(--etsy);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .secondary-button {
+            background: white;
+            color: var(--primary);
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .secondary-button:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Demo Video */
+        .demo-section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .demo-video {
+            background: var(--dark);
+            border-radius: 1rem;
+            padding: 3rem;
+            text-align: center;
+            color: white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .video-placeholder {
+            background: #000;
+            height: 400px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            margin-top: 2rem;
+        }
+
+        /* Features */
+        .features {
+            padding: 4rem 2rem;
+            background: var(--light);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--dark);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        /* How it Works */
+        .how-it-works {
+            padding: 4rem 2rem;
+        }
+
+        .steps-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .step-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        /* Pricing */
+        .pricing {
+            padding: 4rem 2rem;
+            background: var(--light);
+        }
+
+        .pricing-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--primary);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 3rem;
+            transform: rotate(45deg);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            color: var(--text);
+            font-weight: normal;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            color: var(--text);
+        }
+
+        .pricing-features li::before {
+            content: '✓ ';
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 2rem 1rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.8;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 2rem;
+            margin-top: 2rem;
+            opacity: 0.7;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .platform-badges {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .video-placeholder {
+                height: 250px;
+            }
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav>
+        <div class="logo">EasyPrint</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How it Works</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="#" class="cta-button">Get Started</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Print Orders <span class="gradient-text">Instantly</span> During Live Streams</h1>
+        <p class="hero-subtitle">
+            Automatically print shipping labels the moment customers purchase.
+            Perfect for TikTok Shop and Etsy sellers who need speed.
+        </p>
+
+        <div class="platform-badges">
+            <div class="platform-badge tiktok-badge">
+                <span>🎵</span> TikTok Shop
+            </div>
+            <div class="platform-badge etsy-badge">
+                <span>🛍️</span> Etsy
+            </div>
+        </div>
+
+        <div class="hero-buttons">
+            <a href="#" class="cta-button">Start Free Trial</a>
+            <a href="#demo" class="secondary-button">Watch Demo</a>
+        </div>
+    </div>
+</section>
+
+<!-- Demo Video Section -->
+<section id="demo" class="demo-section">
+    <div class="demo-video">
+        <h2>See EasyPrint in Action</h2>
+        <p>Watch how sellers print orders in real-time during live streams</p>
+        <div class="video-placeholder float-animation">
+            ▶️
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features">
+    <div class="features-container">
+        <h2 class="section-title">Everything You Need to Ship Faster</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Instant Printing</h3>
+                <p>Orders print automatically within 2 seconds of purchase. No delays during your live stream.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3 class="feature-title">Custom Labels</h3>
+                <p>Design your own label templates with drag-and-drop editor. Add logos, barcodes, and custom fields.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3 class="feature-title">Multi-Platform</h3>
+                <p>Connect multiple TikTok Shop and Etsy stores. Manage all orders from one dashboard.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Real-Time Dashboard</h3>
+                <p>Track orders, monitor print status, and view analytics in real-time during streams.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🖨️</div>
+                <h3 class="feature-title">Any Printer</h3>
+                <p>Works with DYMO, Zebra, Brother, and any label printer. Support for 4x6, 2x7, and custom sizes.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3 class="feature-title">Auto-Fulfillment</h3>
+                <p>Automatically mark orders as shipped after printing. Update tracking numbers with one click.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it Works -->
+<section id="how-it-works" class="how-it-works">
+    <div class="features-container">
+        <h2 class="section-title">Start Printing in Minutes</h2>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Connect Your Store</h3>
+                <p>Link your TikTok Shop or Etsy store with secure API connection</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Design Labels</h3>
+                <p>Create custom label templates or use our pre-made designs</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Go Live</h3>
+                <p>Start your stream and watch orders print automatically</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3 class="step-title">Ship Fast</h3>
+                <p>Pack orders immediately and delight your customers</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="pricing">
+    <div class="pricing-container">
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+
+        <div class="pricing-card">
+            <h3>Starter</h3>
+            <div class="price">
+                $0<span class="price-period">/month</span>
+            </div>
+            <p>Perfect for new sellers</p>
+            <ul class="pricing-features">
+                <li>Up to 50 orders/month</li>
+                <li>1 connected store</li>
+                <li>Basic label templates</li>
+                <li>Email support</li>
+            </ul>
+            <a href="#" class="cta-button" style="width: 100%; display: inline-block;">Start Free</a>
+        </div>
+
+        <div class="pricing-card featured">
+            <div class="featured-badge">Popular</div>
+            <h3>Professional</h3>
+            <div class="price">
+                $29<span class="price-period">/month</span>
+            </div>
+            <p>For growing businesses</p>
+            <ul class="pricing-features">
+                <li>Unlimited orders</li>
+                <li>5 connected stores</li>
+                <li>Custom label designer</li>
+                <li>Priority support</li>
+                <li>Auto-fulfillment</li>
+                <li>Analytics dashboard</li>
+            </ul>
+            <a href="#" class="cta-button" style="width: 100%; display: inline-block;">Start Trial</a>
+        </div>
+
+        <div class="pricing-card">
+            <h3>Enterprise</h3>
+            <div class="price">
+                $99<span class="price-period">/month</span>
+            </div>
+            <p>For high-volume sellers</p>
+            <ul class="pricing-features">
+                <li>Everything in Pro</li>
+                <li>Unlimited stores</li>
+                <li>API access</li>
+                <li>Dedicated support</li>
+                <li>Custom integrations</li>
+                <li>Team accounts</li>
+            </ul>
+            <a href="#" class="cta-button" style="width: 100%; display: inline-block;">Contact Sales</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer id="contact">
+    <div class="footer-content">
+        <div class="logo" style="justify-content: center; margin-bottom: 2rem;">EasyPrint</div>
+
+        <div class="footer-links">
+            <a href="#">About</a>
+            <a href="#">Blog</a>
+            <a href="#">Support</a>
+            <a href="#">API Docs</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 EasyPrint. All rights reserved.</p>
+            <p>Made with ❤️ for e-commerce sellers</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Header scroll effect
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+        const header = document.querySelector('header');
+        const currentScroll = window.pageYOffset;
+
+        if (currentScroll > 100) {
+            header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        } else {
+            header.style.boxShadow = 'none';
+        }
+
+        lastScroll = currentScroll;
+    });
+</script>
+</body>
+</html>
